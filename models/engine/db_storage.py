@@ -12,7 +12,7 @@ from models.review import Review
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 classes = {"City": City, "State": State, "User": User, "Place": Place,
-           "Review": Review}
+           "Review": Review, "Amenity": Amenity}
 
 
 class DBStorage():
