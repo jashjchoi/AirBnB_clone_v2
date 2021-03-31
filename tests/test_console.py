@@ -2,6 +2,7 @@
 """Unittest for console.py"""
 import unittest
 import os
+import pep8
 from io import StringIO
 from console import HBNBCommand
 from models.base_model import BaseModel
@@ -13,22 +14,25 @@ from models.place import Place
 from models.review import Review
 
 
+@unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == "db", "using db")
 class test_console(unittest.TestCase):
     def setUp(self):
         pass
 
-    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == "db")
+    def test_pep8_errors(self):
+        style_checker = pep8.StyleGuide(quiet=True)
+        res = style_checker.check_fiiles(['console.py'])
+        self.assertEqual(res.total_error, 0)
+
     def test_create(self):
         """test do_create command with empty class name"""
         with patch('sys.stdout', new=StringIO()) as f:
             HBNBCommand().onecmd("create")
-            error_msg = f.getvalue()[:-1]
-            self.assertEqual(error_msg, "**missing class name**")
+            self.assertEqual("**missing class name**\n", f.getvalue())
         """test do_create command with wrong class name"""
         with patch('sys.stdout', new=StringIO()) as f:
             HBNBCommand().onecmd("create dummy")
-            error_msg = f.getvalue()[:-1]
-            self.assertEqual(error_msg, "**class doesn't exist**")
+            self.assertEqual("**class doesn't exist**\n", f.getvalue())
 
     def test_all(self):
         """test do_all command with classes"""
@@ -50,13 +54,55 @@ class test_console(unittest.TestCase):
         """test do_all command with wrong class name"""
         with patch('sys.stdout', new=StringIO()) as f:
             HBNBCommand().onecmd("all dummy")
-            error_msg = f.getvalue()[:-1]
-            self.assertEqual(error_msg, "**class doesn't exist**")
+            self.assertEqual("**class doesn't exist**\n", f.getvalue())
         """test do_all command with empty name"""
         with patch('sys.stdout', new=StringIO()) as f:
             HBNBCommand().onecmd("all")
-            error_msg = f.getvalue()[:-1]
-            self.assertEqual(error_msg, "**missing class name**")
+            self.assertEqual("**missing class name**\n", f.getvalue())
+
+    def test_show(self):
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("show")
+            self.assertEqual("**missing class name**\n", f.getvalue())
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("show dummy")
+            self.assertEqual("**class doesn't exist**\n", f.getvalue())
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("show State")
+            self.assertEqual("**No instance**\n", f.getvalue())
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("show State 11111")
+            self.assertEqual("**Invalid Instance**\n", f.getvalue())
+
+    def test_update(self):
+        """test do_update command with classes"""
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("update")
+            self.assertEqual("**missing class name**\n", f.getvalue())
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("update dummy")
+            self.assertEqual("**class doesn't exist**\n", f.getvalue())
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("update State")
+            self.assertEqual("**No instance**\n", f.getvalue())
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("update State 11111")
+            self.assertEqual("**Invalid Instance**\n", f.getvalue())
+
+    def test_destroy(self):
+        """test do_destroy command with classes"""
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("destroy")
+            self.assertEqual("**missing class name**\n", f.getvalue())
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("destroy dummy")
+            self.assertEqual("**class doesn't exist**\n", f.getvalue())
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("destroy State")
+            self.assertEqual("**No instance**\n", f.getvalue())
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd("destroy State 11111")
+            self.assertEqual("**Invalid Instance**\n", f.getvalue())
 
     def good_test(self):
         """correct test case"""
@@ -67,4 +113,5 @@ class test_console(unittest.TestCase):
             self.assertTrue("'name': 'Oklahoma'" in value)
 
 if __name__ == "__main__":
-    unittest.main()
+    if os.getenv("HBNB_TYPE_STORAGE") != "db":
+        unittest.main()
