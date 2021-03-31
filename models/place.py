@@ -41,7 +41,6 @@ class Place(BaseModel, Base):
     else:
         @property
         def reviews(self):
-            from models.review import Review
             from models import storage
             """
             getter attribute that returns the list of Review instances
@@ -56,7 +55,6 @@ class Place(BaseModel, Base):
 
         @property
         def amenities(self):
-            from models import Amenity
             from models import storage
 
             """
