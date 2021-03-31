@@ -135,9 +135,9 @@ class HBNBCommand(cmd.Cmd):
                 else:
                     val = int(val)
                 setattr(new_instance, key, val)
+        storage.new(new_instance)
         storage.save()
         print(new_instance.id)
-        storage.save()
 
     def help_create(self):
         """ Help information for the create method """
@@ -227,7 +227,6 @@ class HBNBCommand(cmd.Cmd):
         else:
             for k, v in __objects.items():
                 print_list.append(str(v))
-
         print('[%s]' % ', '.join(map(str, print_list)))
 
     def help_all(self):
